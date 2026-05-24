@@ -58,13 +58,113 @@ function App() {
     }
   };
 
-  {/*Edit event handler*/}
+  {
+    /*Edit event handler*/
+  }
   const editFunction = (editIndex) => {
-    (item, index) =>  
+    if (editorInput !== "") {
+      const editOverwrite = confirm(
+        "You're about to overwrite an existing note. Please save your notes or click OK to overwrite and proceed",
+      );
+
+      {
+        /*guard clause to listen to the user*/
+      }
+      if (!editOverwrite) {
+        return;
+      }
+    }
+
+    const targetTask = taskSummary[editIndex];
+    setEditorInput(targetTask.name);
+    setTaskStatus(targetTask.status);
+    setPriority(targetTask.priority);
+    setDueDate(targetTask.dueDate || "");
+
+    {
+      /*Drop down the editor*/
+    }
+    setTaskInput(true);
+
+    {
+      /*remove the selected saved note*/
+    }
+    const updatedList = taskSummary.filter(
+      (item, index) => index !== editIndex,
+    );
+    setTaskSummary(updatedList);
+  };
+
+  {
+    /*dynamic filtering search event handler*/
   }
 
+  const [searchInput, setSearchInput] = useState("");
+
+  {
+    /*State management filtering for status*/
+  }
+  const [statusFilter, setStatusFilter] = useState("All Status");
+
+  {
+    /*State management filtering for priority*/
+  }
+  const [priorityFilter, setPriorityFilter] = useState("All Priority");
+
+  const filteredTask = taskSummary.filter((item) => {
+    const matchSearch = item.name
+      .toLowerCase()
+      .includes(searchInput.toLowerCase().trim());
+
+    const matchStatus =
+      statusFilter === "All Status" || item.status === statusFilter;
+
+    const matchPriority =
+      priorityFilter === "All Priority" || item.priority === priorityFilter;
+    return matchSearch && matchStatus && matchPriority;
+  });
+
+  {
+    /*Math stats count event handler*/
+  }
+  const totalTasks = taskSummary.length;
+
+  const urgentTasks = taskSummary.filter(
+    (item) => item.priority === "Urgent",
+  ).length;
+
+  const inProgressTasks = taskSummary.filter(
+    (item) => item.status === "In Progress",
+  ).length;
+
+  const notCompleteTasks = taskSummary.filter(
+    (item) => item.status === "Not Complete",
+  ).length;
+
+  const dueTasksCount = taskSummary.filter((item) => {
+    if (!item.dueDate || item.status == "Complete") return false;
+    const currentDateTime = new Date();
+    const taskDueDate = new Date(item.dueDate);
+    return taskDueDate < currentDateTime;
+  }).length;
+
+  {
+    /*Event handler for due date*/
+  }
+
+  const isOverdue = (item) => {
+    {
+      /*exclude overdue event if there is no due date or if task is marked as complete*/
+    }
+    if (!item.dueDate || item.status == "Complete") return false;
+
+    const currentDateTime = new Date();
+    const taskDueDate = new Date(item.dueDate);
+    return taskDueDate < currentDateTime;
+  };
+
   return (
-    <section>
+    <section className="container">
       <h2>Task Management Dashboard</h2>
       <div>
         <button onClick={() => setTaskInput(!taskInput)}>+Add Tasks</button>
@@ -129,7 +229,13 @@ function App() {
                 </button>
               </div>
               <div>
-                <button onClick={(e) => e.preventDefault()}>Clear</button>
+                <button
+                  onClick={(e) => {
+                    (e.preventDefault(), setEditorInput(""));
+                  }}
+                >
+                  Clear
+                </button>
               </div>
             </div>
           </div>
@@ -137,30 +243,100 @@ function App() {
       </form>
       <section className="task-summary">
         <h3>Task Summary</h3>
+        <input
+          placeholder="Search Task"
+          className="search-task"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+        ></input>
+        <div className="filter-container">
+          <label>Filter by: </label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All Status">All Status</option>
+            <option value="Not Complete">Not Complete</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Complete">Complete</option>
+          </select>
+          <div>
+            <select
+              value={priorityFilter}
+              onChange={(e) => setPriorityFilter(e.target.value)}
+            >
+              <option value="All Priority">All Priority</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Not Urgent">Not Urgent</option>
+            </select>
+          </div>
+        </div>
+        <div className="task-count">
+          <div>
+            <label>Total Tasks: {totalTasks}</label>
+          </div>
+          <div>
+            <label>Total Urgent: {urgentTasks}</label>
+          </div>
+          <div>
+            <label>Total In Progress: {inProgressTasks}</label>
+          </div>
+          <div>
+            <label>Total Not Complete: {notCompleteTasks}</label>
+          </div>
+          <div>
+            <label>Total Due: {dueTasksCount}</label>
+          </div>
+        </div>
         <div>
-          <ul>
-            {taskSummary.map((item, index) => (
-              <li key={index} className="single-task">
-                <span>Task Name: {item.name}</span> <br />
-                <span>Status: {item.status}</span> <br />
-                <span>Priority: {item.priority}</span> <br />
-                <span>Due Date: {item.dueDate}</span> <br />
-                <span>
-                  Mark as complete
-                  <input type="checkbox"></input>
-                </span>
-                <div className="button-container">
-                  <div>
-                    <button onClick={() => deleteFunction(index)}>
-                      Delete
-                    </button>
+          <ul className="task-container">
+            {filteredTask.map((item) => {
+              const originalIndex = taskSummary.indexOf(item);
+              let taskClassName = "single-task";
+
+              if (isOverdue(item)) {
+                taskClassName = "single-task overdue";
+              }
+              return (
+                <li key={originalIndex} className={taskClassName}>
+                  <span>
+                    <strong>Task Name:</strong> {item.name}
+                  </span>{" "}
+                  <br />
+                  <span>
+                    <strong>Status: </strong>
+                    {item.status}
+                  </span>{" "}
+                  <br />
+                  <span>
+                    <strong>Priority: </strong>
+                    {item.priority}
+                  </span>{" "}
+                  <br />
+                  <span>
+                    <strong>Due Date: </strong>
+                    {item.dueDate}
+                  </span>{" "}
+                  <br />
+                  <span>
+                    <strong>Mark as complete</strong>
+                    <input type="checkbox"></input>
+                  </span>
+                  <div className="button-container">
+                    <div>
+                      <button onClick={() => deleteFunction(originalIndex)}>
+                        Delete
+                      </button>
+                    </div>
+                    <div>
+                      <button onClick={() => editFunction(originalIndex)}>
+                        Edit
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <button onClick={() => editFunction(index)}>Edit</button>
-                  </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
