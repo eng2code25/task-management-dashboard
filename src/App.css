@@ -2,6 +2,10 @@ body {
   background-color: beige;
 }
 
+.weather-container {
+  margin-bottom: 50px;
+}
+
 .task-editor-container {
   border: 1px black solid;
   margin-top: 20px;

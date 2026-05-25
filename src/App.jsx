@@ -163,8 +163,50 @@ function App() {
     return taskDueDate < currentDateTime;
   };
 
+  {
+    /*Weather API integration state management*/
+  }
+  {
+    /*Data fetched from weather API*/
+  }
+  const [weatherData, setWeatherData] = useState(null);
+
+  {
+    /*Data loading awaiting for reply*/
+  }
+  const [weatherLoading, setWeatherLoading] = useState(true);
+
+  {
+    /*State,city input from user*/
+  }
+  const [city, setCity] = useState("Kuala Lumpur");
+
+  {
+    /*event handler for weather API*/
+  }
+  const fetchWeather = async () => {
+    try {
+      setWeatherLoading(true);
+      const response = await fetch(`https://wttr.in/${city}?format=j1]`);
+      const data = await response.json();
+
+      setWeatherData(data);
+      setWeatherLoading(false);
+    } catch (error) {
+      console.error("Weather API failed to load: ", error);
+      setWeatherLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather();
+  }, []);
+
   return (
     <section className="container">
+      <div className="weather-container">
+        <h3>Weather Dashboard ({city})</h3>
+      </div>
       <h2>Task Management Dashboard</h2>
       <div>
         <button onClick={() => setTaskInput(!taskInput)}>+Add Tasks</button>
@@ -285,7 +327,9 @@ function App() {
             <label>Total Not Complete: {notCompleteTasks}</label>
           </div>
           <div>
-            <label>Total Due: {dueTasksCount}</label>
+            <label style={{ color: "red" }}>
+              <strong>Total Due: {dueTasksCount}</strong>
+            </label>
           </div>
         </div>
         <div>
