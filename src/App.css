@@ -3,7 +3,17 @@ body {
 }
 
 .weather-container {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
+  padding-left: 10px;
+  border: 1px solid black;
+  border-radius: 10px;
+  background-color: green;
+}
+
+.weather-info {
+  display: flex;
+  gap: 30px;
+  font-size: small;
 }
 
 .task-editor-container {

@@ -184,10 +184,11 @@ function App() {
   {
     /*event handler for weather API*/
   }
+
   const fetchWeather = async () => {
     try {
       setWeatherLoading(true);
-      const response = await fetch(`https://wttr.in/${city}?format=j1]`);
+      const response = await fetch(`https://wttr.in/${city}?format=j1`);
       const data = await response.json();
 
       setWeatherData(data);
@@ -205,7 +206,31 @@ function App() {
   return (
     <section className="container">
       <div className="weather-container">
-        <h3>Weather Dashboard ({city})</h3>
+        <h4>Weather Dashboard ({city})</h4>
+        {weatherLoading ? (
+          <p>Loading real-time weather...</p>
+        ) : weatherData ? (
+          <div className="weather-info">
+            <p>
+              <strong>
+                Temperature: {weatherData.current_condition[0].temp_C}°C
+              </strong>
+            </p>
+            <p>
+              <strong>
+                Condition:{" "}
+                {weatherData.current_condition[0].weatherDesc[0].value}
+              </strong>
+            </p>
+            <p>
+              <strong>
+                Humidity: {weatherData.current_condition[0].humidity}%
+              </strong>
+            </p>
+          </div>
+        ) : (
+          <p>Could not retrieve weather data.</p>
+        )}
       </div>
       <h2>Task Management Dashboard</h2>
       <div>
