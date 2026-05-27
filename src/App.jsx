@@ -205,210 +205,215 @@ function App() {
 
   return (
     <section className="container">
-      <div className="weather-container">
-        <h4>Weather Dashboard ({city})</h4>
-        {weatherLoading ? (
-          <p>Loading real-time weather...</p>
-        ) : weatherData ? (
-          <div className="weather-info">
-            <p>
-              <strong>
-                Temperature: {weatherData.current_condition[0].temp_C}°C
-              </strong>
-            </p>
-            <p>
-              <strong>
-                Condition:{" "}
-                {weatherData.current_condition[0].weatherDesc[0].value}
-              </strong>
-            </p>
-            <p>
-              <strong>
-                Humidity: {weatherData.current_condition[0].humidity}%
-              </strong>
-            </p>
-          </div>
-        ) : (
-          <p>Could not retrieve weather data.</p>
-        )}
-      </div>
-      <h2>Task Management Dashboard</h2>
-      <div>
-        <button onClick={() => setTaskInput(!taskInput)}>+Add Tasks</button>
-      </div>
-      <form>
-        {taskInput && (
-          <div className="task-editor-container">
-            <div className="task-editor">
-              <textarea
-                placeholder="Write task here..."
-                className="editor"
-                value={editorInput}
-                onChange={(e) => setEditorInput(e.target.value)}
-              ></textarea>
-            </div>
-            <div className="task-condition">
-              <div className="task-status">
-                <select
-                  value={taskStatus}
-                  onChange={(e) => setTaskStatus(e.target.value)}
-                >
-                  <option value="Not Complete">Not complete</option>
-                  <option value="In Progress">In progress</option>
-                  <option value="Complete">Complete</option>
-                </select>
-              </div>
-              <div className="task-priority">
-                <select
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                >
-                  <option value="Urgent">Urgent</option>
-                  <option value="Not Urgent">Not Urgent</option>
-                </select>
-              </div>
-              <div className="task-due">
-                <input
-                  type="datetime-local"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                ></input>
-              </div>
-            </div>
-            <div className="task-action">
-              <div>
-                <button
-                  onClick={(e) => {
-                    (e.preventDefault(),
-                      setTaskSummary([
-                        ...taskSummary,
-                        {
-                          name: editorInput,
-                          status: taskStatus,
-                          priority: priority,
-                          dueDate: dueDate,
-                        },
-                      ]),
-                      setEditorInput(""));
-                  }}
-                >
-                  Save
-                </button>
-              </div>
-              <div>
-                <button
-                  onClick={(e) => {
-                    (e.preventDefault(), setEditorInput(""));
-                  }}
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </form>
-      <section className="task-summary">
-        <h3>Task Summary</h3>
-        <input
-          placeholder="Search Task"
-          className="search-task"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-        ></input>
-        <div className="filter-container">
-          <label>Filter by: </label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="All Status">All Status</option>
-            <option value="Not Complete">Not Complete</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Complete">Complete</option>
+      <div className="dashboard">
+        <div className="weather-container">
+          <select>
+            <option></option>
           </select>
-          <div>
-            <select
-              value={priorityFilter}
-              onChange={(e) => setPriorityFilter(e.target.value)}
-            >
-              <option value="All Priority">All Priority</option>
-              <option value="Urgent">Urgent</option>
-              <option value="Not Urgent">Not Urgent</option>
-            </select>
-          </div>
+          <h4>Weather Dashboard ({city})</h4>
+          {weatherLoading ? (
+            <p>Loading real-time weather...</p>
+          ) : weatherData ? (
+            <div className="weather-info">
+              <p>
+                <strong>
+                  Temperature: {weatherData.current_condition[0].temp_C}°C
+                </strong>
+              </p>
+              <p>
+                <strong>
+                  Condition:{" "}
+                  {weatherData.current_condition[0].weatherDesc[0].value}
+                </strong>
+              </p>
+              <p>
+                <strong>
+                  Humidity: {weatherData.current_condition[0].humidity}%
+                </strong>
+              </p>
+            </div>
+          ) : (
+            <p>Could not retrieve weather data.</p>
+          )}
         </div>
-        <div className="task-count">
-          <div>
-            <label>Total Tasks: {totalTasks}</label>
-          </div>
-          <div>
-            <label>Total Urgent: {urgentTasks}</label>
-          </div>
-          <div>
-            <label>Total In Progress: {inProgressTasks}</label>
-          </div>
-          <div>
-            <label>Total Not Complete: {notCompleteTasks}</label>
-          </div>
-          <div>
-            <label style={{ color: "red" }}>
-              <strong>Total Due: {dueTasksCount}</strong>
-            </label>
-          </div>
-        </div>
+        <h2>Task Management Dashboard</h2>
         <div>
-          <ul className="task-container">
-            {filteredTask.map((item) => {
-              const originalIndex = taskSummary.indexOf(item);
-              let taskClassName = "single-task";
-
-              if (isOverdue(item)) {
-                taskClassName = "single-task overdue";
-              }
-              return (
-                <li key={originalIndex} className={taskClassName}>
-                  <span>
-                    <strong>Task Name:</strong> {item.name}
-                  </span>{" "}
-                  <br />
-                  <span>
-                    <strong>Status: </strong>
-                    {item.status}
-                  </span>{" "}
-                  <br />
-                  <span>
-                    <strong>Priority: </strong>
-                    {item.priority}
-                  </span>{" "}
-                  <br />
-                  <span>
-                    <strong>Due Date: </strong>
-                    {item.dueDate}
-                  </span>{" "}
-                  <br />
-                  <span>
-                    <strong>Mark as complete</strong>
-                    <input type="checkbox"></input>
-                  </span>
-                  <div className="button-container">
-                    <div>
-                      <button onClick={() => deleteFunction(originalIndex)}>
-                        Delete
-                      </button>
-                    </div>
-                    <div>
-                      <button onClick={() => editFunction(originalIndex)}>
-                        Edit
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <button onClick={() => setTaskInput(!taskInput)}>+Add Tasks</button>
         </div>
-      </section>
+        <form>
+          {taskInput && (
+            <div className="task-editor-container">
+              <div className="task-editor">
+                <textarea
+                  placeholder="Write task here..."
+                  className="editor"
+                  value={editorInput}
+                  onChange={(e) => setEditorInput(e.target.value)}
+                ></textarea>
+              </div>
+              <div className="task-condition">
+                <div className="task-status">
+                  <select
+                    value={taskStatus}
+                    onChange={(e) => setTaskStatus(e.target.value)}
+                  >
+                    <option value="Not Complete">Not complete</option>
+                    <option value="In Progress">In progress</option>
+                    <option value="Complete">Complete</option>
+                  </select>
+                </div>
+                <div className="task-priority">
+                  <select
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                  >
+                    <option value="Urgent">Urgent</option>
+                    <option value="Not Urgent">Not Urgent</option>
+                  </select>
+                </div>
+                <div className="task-due">
+                  <input
+                    type="datetime-local"
+                    value={dueDate}
+                    onChange={(e) => setDueDate(e.target.value)}
+                  ></input>
+                </div>
+              </div>
+              <div className="task-action">
+                <div>
+                  <button
+                    onClick={(e) => {
+                      (e.preventDefault(),
+                        setTaskSummary([
+                          ...taskSummary,
+                          {
+                            name: editorInput,
+                            status: taskStatus,
+                            priority: priority,
+                            dueDate: dueDate,
+                          },
+                        ]),
+                        setEditorInput(""));
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+                <div>
+                  <button
+                    onClick={(e) => {
+                      (e.preventDefault(), setEditorInput(""));
+                    }}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </form>
+        <section className="task-summary">
+          <h3>Task Summary</h3>
+          <input
+            placeholder="Search Task"
+            className="search-task"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+          ></input>
+          <div className="filter-container">
+            <label>Filter by: </label>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="All Status">All Status</option>
+              <option value="Not Complete">Not Complete</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Complete">Complete</option>
+            </select>
+            <div>
+              <select
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
+              >
+                <option value="All Priority">All Priority</option>
+                <option value="Urgent">Urgent</option>
+                <option value="Not Urgent">Not Urgent</option>
+              </select>
+            </div>
+          </div>
+          <div className="task-count">
+            <div>
+              <label>Total Tasks: {totalTasks}</label>
+            </div>
+            <div>
+              <label>Total Urgent: {urgentTasks}</label>
+            </div>
+            <div>
+              <label>Total In Progress: {inProgressTasks}</label>
+            </div>
+            <div>
+              <label>Total Not Complete: {notCompleteTasks}</label>
+            </div>
+            <div>
+              <label style={{ color: "red" }}>
+                <strong>Total Due: {dueTasksCount}</strong>
+              </label>
+            </div>
+          </div>
+          <div>
+            <ul className="task-container">
+              {filteredTask.map((item) => {
+                const originalIndex = taskSummary.indexOf(item);
+                let taskClassName = "single-task";
+
+                if (isOverdue(item)) {
+                  taskClassName = "single-task overdue";
+                }
+                return (
+                  <li key={originalIndex} className={taskClassName}>
+                    <span>
+                      <strong>Task Name:</strong> {item.name}
+                    </span>{" "}
+                    <br />
+                    <span>
+                      <strong>Status: </strong>
+                      {item.status}
+                    </span>{" "}
+                    <br />
+                    <span>
+                      <strong>Priority: </strong>
+                      {item.priority}
+                    </span>{" "}
+                    <br />
+                    <span>
+                      <strong>Due Date: </strong>
+                      {item.dueDate}
+                    </span>{" "}
+                    <br />
+                    <span>
+                      <strong>Mark as complete</strong>
+                      <input type="checkbox"></input>
+                    </span>
+                    <div className="button-container">
+                      <div>
+                        <button onClick={() => deleteFunction(originalIndex)}>
+                          Delete
+                        </button>
+                      </div>
+                      <div>
+                        <button onClick={() => editFunction(originalIndex)}>
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+      </div>
     </section>
   );
 }
