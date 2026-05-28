@@ -16,12 +16,22 @@ body {
   border: 1px solid black;
   border-radius: 10px;
   background-color: green;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  .weather-container {
+    grid-row: 1;
+  }
 }
 
 .weather-info {
-  display: flex;
-  gap: 30px;
-  font-size: small;
+  font-size: smaller;
 }
 
 .task-editor-container {
