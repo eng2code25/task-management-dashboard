@@ -34,6 +34,10 @@ body {
   font-size: smaller;
 }
 
+.nation-weather {
+  margin-top: 10px;
+}
+
 .task-editor-container {
   border: 1px black solid;
   margin-top: 20px;

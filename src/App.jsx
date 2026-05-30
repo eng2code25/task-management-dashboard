@@ -203,6 +203,41 @@ function App() {
     fetchWeather();
   }, []);
 
+  {
+    /*Country select API*/
+  }
+  const [countries, setCountries] = useState([]);
+  const [countryLoading, setCountryLoading] = useState(true);
+  const fetchCountry = async () => {
+    try {
+      const response = await fetch(
+        "https://restcountries.com/v3.1/all?fields=name,capital",
+      );
+      const data = await response.json();
+
+      {
+        /*extract only the capital city from the API source and ignore those that doesn't have one*/
+      }
+      const validCountry = data.filter(
+        (c) => c.capital && c.capital.length > 0,
+      );
+
+      {
+        /*sort them alphabetically*/
+      }
+      validCountry.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+      setCountries(validCountry);
+      setCountryLoading(false);
+    } catch (error) {
+      console.error("API failed to be connected: ", error);
+      setCountryLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchCountry();
+  }, []);
+
   return (
     <section className="container">
       <div className="dashboard">
@@ -313,8 +348,23 @@ function App() {
             )}
           </div>
           <div className="nation-weather">
-            <select>
-              <option></option>
+            <select
+              value={countries}
+              n
+              onChange={(e) => setCountries(e.target.value)}
+            >
+              {countryLoading ? (
+                <option>Loading country list...</option>
+              ) : (
+                <>
+                  <option value="Kuala Lumpur">Please select a country</option>
+                  {countries.map((country, index) => (
+                    <option key={index} value={country.capital[0]}>
+                      {country.name.common}({country.capital[0]})
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
           </div>
         </div>
