@@ -201,7 +201,7 @@ function App() {
 
   useEffect(() => {
     fetchWeather();
-  }, []);
+  }, [city]);
 
   {
     /*Country select API*/
@@ -238,9 +238,97 @@ function App() {
     fetchCountry();
   }, []);
 
+  {
+    /*Hide and show weather dashboard*/
+  }
+  const [hideWeather, setHideWeather] = useState(false);
+
+  {
+    /*strike out feature event handler*/
+  }
+  const toggleComplete = (indexToToggle) => {
+    const updatedTasks = taskSummary.map((item, index) => {
+      if (index === indexToToggle) {
+        return {
+          ...item,
+          status: item.status === "Complete" ? "Not Complete" : "Complete",
+        };
+      }
+      return item;
+    });
+    setTaskSummary(updatedTasks);
+  };
+
   return (
     <section className="container">
       <div className="dashboard">
+        {hideWeather && (
+          <button
+            className="show-weather-button"
+            onClick={() => setHideWeather(false)}
+          >
+            Show weather
+          </button>
+        )}
+        {!hideWeather && (
+          <div className="weather-tool">
+            <div className="weather-container">
+              <div className="nation-weather">
+                <select value={city} onChange={(e) => setCity(e.target.value)}>
+                  {countryLoading ? (
+                    <option>Loading country list...</option>
+                  ) : (
+                    <>
+                      <option value="Kuala Lumpur">
+                        Please select a country
+                      </option>
+                      {countries.map((country, index) => (
+                        <option key={index} value={country.capital[0]}>
+                          {country.name.common}({country.capital[0]})
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
+              </div>
+              <div>
+                <button
+                  className="hide-weather-button"
+                  onClick={() => setHideWeather(!hideWeather)}
+                >
+                  X
+                </button>
+              </div>
+            </div>
+            <div className="weather-data">
+              <h4>{city}</h4>
+              {weatherLoading ? (
+                <p>Loading real-time weather...</p>
+              ) : weatherData ? (
+                <div className="weather-info">
+                  <div>
+                    <strong>
+                      Temperature: {weatherData.current_condition[0].temp_C}°C
+                    </strong>
+                  </div>
+                  <div>
+                    <strong>
+                      Condition:{" "}
+                      {weatherData.current_condition[0].weatherDesc[0].value}
+                    </strong>
+                  </div>
+                  <div>
+                    <strong>
+                      Humidity: {weatherData.current_condition[0].humidity}%
+                    </strong>
+                  </div>
+                </div>
+              ) : (
+                <p>Could not retrieve weather data.</p>
+              )}
+            </div>
+          </div>
+        )}
         <div className="add-task-dashboard">
           <h2>Task Management Dashboard</h2>
           <div>
@@ -319,55 +407,6 @@ function App() {
             )}
           </form>
         </div>
-        <div className="weather-container">
-          <div>
-            <h4>{city}</h4>
-            {weatherLoading ? (
-              <p>Loading real-time weather...</p>
-            ) : weatherData ? (
-              <div className="weather-info">
-                <p>
-                  <strong>
-                    Temperature: {weatherData.current_condition[0].temp_C}°C
-                  </strong>
-                </p>
-                <p>
-                  <strong>
-                    Condition:{" "}
-                    {weatherData.current_condition[0].weatherDesc[0].value}
-                  </strong>
-                </p>
-                <p>
-                  <strong>
-                    Humidity: {weatherData.current_condition[0].humidity}%
-                  </strong>
-                </p>
-              </div>
-            ) : (
-              <p>Could not retrieve weather data.</p>
-            )}
-          </div>
-          <div className="nation-weather">
-            <select
-              value={countries}
-              n
-              onChange={(e) => setCountries(e.target.value)}
-            >
-              {countryLoading ? (
-                <option>Loading country list...</option>
-              ) : (
-                <>
-                  <option value="Kuala Lumpur">Please select a country</option>
-                  {countries.map((country, index) => (
-                    <option key={index} value={country.capital[0]}>
-                      {country.name.common}({country.capital[0]})
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
-          </div>
-        </div>
         <section className="task-summary">
           <h3>Task Summary</h3>
           <input
@@ -426,8 +465,18 @@ function App() {
                 if (isOverdue(item)) {
                   taskClassName = "single-task overdue";
                 }
+
+                const itemStyle = {
+                  textDecoration:
+                    item.status === "Complete" ? "line-through" : "none",
+                };
+
                 return (
-                  <li key={originalIndex} className={taskClassName}>
+                  <li
+                    key={originalIndex}
+                    className={taskClassName}
+                    style={itemStyle}
+                  >
                     <span>
                       <strong>Task Name:</strong> {item.name}
                     </span>{" "}
@@ -449,7 +498,11 @@ function App() {
                     <br />
                     <span>
                       <strong>Mark as complete</strong>
-                      <input type="checkbox"></input>
+                      <input
+                        type="checkbox"
+                        checked={item.status === "Complete"}
+                        onChange={() => toggleComplete(originalIndex)}
+                      ></input>
                     </span>
                     <div className="button-container">
                       <div>
