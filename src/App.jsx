@@ -76,6 +76,7 @@ function App() {
     }
 
     const targetTask = taskSummary[editIndex];
+    setTaskTitle(targetTask.title);
     setEditorInput(targetTask.name);
     setTaskStatus(targetTask.status);
     setPriority(targetTask.priority);
@@ -259,6 +260,31 @@ function App() {
     setTaskSummary(updatedTasks);
   };
 
+  {
+    /*task title state management*/
+  }
+  const [taskTitle, setTaskTitle] = useState("");
+
+  {
+    /*state managementfor sort by tool*/
+  }
+  const [sortBy, setSortBy] = useState("Default");
+
+  {
+    /*event handler for sort by tool*/
+  }
+  const sortedTasks = [...filteredTask].sort((a, b) => {
+    if (sortBy === "alphabetical") {
+      return (a.title || "").localeCompare(b.title || "");
+    }
+
+    if (sortBy === "latest") {
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    }
+
+    return 0;
+  });
+
   return (
     <section className="container">
       <div className="dashboard">
@@ -337,6 +363,14 @@ function App() {
           <form>
             {taskInput && (
               <div className="task-editor-container">
+                <div className="task-title-container">
+                  <textarea
+                    placeholder="Title here..."
+                    className="task-title"
+                    value={taskTitle}
+                    onChange={(e) => setTaskTitle(e.target.value)}
+                  ></textarea>
+                </div>
                 <div className="task-editor">
                   <textarea
                     placeholder="Write task here..."
@@ -381,13 +415,16 @@ function App() {
                           setTaskSummary([
                             ...taskSummary,
                             {
+                              title: taskTitle,
                               name: editorInput,
                               status: taskStatus,
                               priority: priority,
                               dueDate: dueDate,
+                              createdAt: Date.now(),
                             },
                           ]),
-                          setEditorInput(""));
+                          setEditorInput(""),
+                          setTaskTitle(""));
                       }}
                     >
                       Save
@@ -396,10 +433,12 @@ function App() {
                   <div>
                     <button
                       onClick={(e) => {
-                        (e.preventDefault(), setEditorInput(""));
+                        (e.preventDefault(),
+                          setEditorInput(""),
+                          setTaskTitle(""));
                       }}
                     >
-                      Clear
+                      Clear all
                     </button>
                   </div>
                 </div>
@@ -437,6 +476,14 @@ function App() {
               </select>
             </div>
           </div>
+          <div className="sort-filter">
+            <label>Sort by: </label>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="default">Default</option>
+              <option value="alphabetical">Alphabetical</option>
+              <option value="latest">Latest</option>
+            </select>
+          </div>
           <div className="task-count">
             <div>
               <label>Total Tasks: {totalTasks}</label>
@@ -458,7 +505,7 @@ function App() {
           </div>
           <div>
             <ul className="task-container">
-              {filteredTask.map((item) => {
+              {sortedTasks.map((item) => {
                 const originalIndex = taskSummary.indexOf(item);
                 let taskClassName = "single-task";
 
@@ -477,6 +524,9 @@ function App() {
                     className={taskClassName}
                     style={itemStyle}
                   >
+                    <span>
+                      <h3>Title: {item.title}</h3>
+                    </span>
                     <span>
                       <strong>Task Name:</strong> {item.name}
                     </span>{" "}

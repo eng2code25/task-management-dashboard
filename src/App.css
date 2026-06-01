@@ -58,13 +58,24 @@ body {
   margin-top: 20px;
   padding: 10px;
   border-radius: 10px;
-  width: 95%;
+  width: 100%;
+  max-width: 500px;
+}
+
+.task-title-container {
+  margin-bottom: 10px;
+}
+
+.task-title {
+  height: 20px;
+  width: 100%;
   max-width: 500px;
 }
 
 .editor {
-  min-width: 50%;
-  min-height: 50px;
+  width: 100%;
+  max-width: 500px;
+  height: 100px;
 }
 
 .task-condition,
@@ -119,6 +130,10 @@ body {
   margin-top: 20px;
   display: flex;
   gap: 20px;
+}
+
+.sort-filter {
+  margin-top: 15px;
 }
 
 .task-count {
