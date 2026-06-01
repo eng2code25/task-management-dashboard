@@ -44,7 +44,7 @@ The application allows users to create, edit, delete, search, filter, and manage
 
 ## Live Link
 
-TBA
+https://task-management-dashboard-topaz-ten.vercel.app/
 
 ## What I Learned
 
